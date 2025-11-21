@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Journey Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+        }
+
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Custom Plane Icon Styles */
+        .plane-icon {
+            font-size: 32px;
+            line-height: 32px;
+            text-align: center;
+            transition: transform 0.1s linear;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+            z-index: 1000 !important;
+        }
+
+        /* City Label Styles */
+        .city-label {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid #555;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Arial', sans-serif;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+        }
+
+        .city-label.active {
+            opacity: 1;
+            background: #333;
+        }
+
+        /* Comic Pop-up Styles */
+        .comic-popup {
+            position: absolute;
+            background: #fff;
+            color: #000;
+            padding: 15px;
+            border: 3px solid #000;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 5px 5px 0px #000;
+            white-space: nowrap;
+            transform: translate(-50%, -150%) scale(0);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            pointer-events: none;
+            text-align: center;
+        }
+
+        .comic-popup::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px 10px 0;
+            border-style: solid;
+            border-color: #000 transparent transparent transparent;
+        }
+
+        .comic-popup.show {
+            transform: translate(-50%, -150%) scale(1);
+        }
+
+        .comic-popup .title {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script>
+    // Initialize Map
+    const map = L.map('map', {
+        zoomControl: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        dragging: false,
+        attributionControl: false
+    }).setView([20.0000, 79.0000], 5);
+
+    // Add Dark Mode Tiles
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd',
+        maxZoom: 19
+    }).addTo(map);
+
+    // Journey Data
+    const journey = [
+        { name: "Kochi", coords: [9.9312, 76.2673], message: "Born here" },
+        { name: "Mumbai", coords: [19.0760, 72.8777], message: "Father transfer<br>Indian Navy" },
+        { name: "Vizag", coords: [17.6868, 83.2185], message: "Father transfer<br>Indian Navy" },
+        { name: "Bharuch", coords: [21.7051, 72.9959], message: "Father Pvt job" },
+        { name: "Vizag", coords: [17.6868, 83.2185], message: "" }, // Return to Vizag
+        { name: "Varanasi", coords: [25.3176, 82.9739], message: "Studied 11th, 12th" },
+        { name: "Kota", coords: [25.2138, 75.8648], message: "Studied at Allen" },
+        { name: "Bangalore", coords: [12.9716, 77.5946], message: "Studied in RVCE<br>& did Job here" },
+        { name: "Varanasi", coords: [25.3176, 82.9739], message: "1yr COVID hit" },
+        { name: "Bangalore", coords: [12.9716, 77.5946], message: "Back here for Job" },
+        { name: "Kochi", coords: [9.9312, 76.2673], message: "Started working in IBM" }
+    ];
+
+    // Add markers for unique cities
+    const uniqueCities = {};
+    journey.forEach(stop => {
+        if (!uniqueCities[stop.name]) {
+            uniqueCities[stop.name] = stop.coords;
+            
+            // Marker
+            L.circleMarker(stop.coords, {
+                radius: 5,
+                fillColor: "#555",
+                color: "#fff",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+
+            // Label
+            const labelIcon = L.divIcon({
+                className: 'city-label-container',
+                html: `<div class="city-label" id="label-${stop.name}">${stop.name}</div>`,
+                iconSize: [100, 20],
+                iconAnchor: [-10, 10]
+            });
+            L.marker(stop.coords, {icon: labelIcon}).addTo(map);
+        }
+    });
+
+    // Draw Path
+    const latlngs = journey.map(c => c.coords);
+    const polyline = L.polyline(latlngs, {color: '#4285f4', weight: 2, opacity: 0.3, dashArray: '5, 10'}).addTo(map);
+
+    // Plane Icon
+    const planeIcon = L.divIcon({
+        className: 'plane-icon',
+        html: '<div id="plane-sprite">✈️</div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 16]
+    });
+    const planeMarker = L.marker(journey[0].coords, {icon: planeIcon, zIndexOffset: 1000}).addTo(map);
+
+    // Popup Container
+    const popupIcon = L.divIcon({
+        className: 'popup-container',
+        html: `<div id="comic-popup" class="comic-popup"><span class="title">Life Update</span><span id="popup-text"></span></div>`,
+        iconSize: [0, 0],
+        iconAnchor: [0, 0]
+    });
+    const popupMarker = L.marker(journey[0].coords, {icon: popupIcon, zIndexOffset: 2000}).addTo(map);
+
+    // Animation Logic
+    let currentLeg = 0;
+    let progress = 0;
+    const speed = 0.008;
+    let isPaused = false;
+
+    function showPopup(text, coords) {
+        if (!text) return;
+        const popup = document.getElementById('comic-popup');
+        const popupText = document.getElementById('popup-text');
+        popupText.innerHTML = text;
+        popupMarker.setLatLng(coords);
+        popup.classList.add('show');
+        
+        // Hide after delay
+        setTimeout(() => {
+            popup.classList.remove('show');
+        }, 2000);
+    }
+
+    // Show initial popup
+    showPopup(journey[0].message, journey[0].coords);
+
+    function animate() {
+        if (isPaused) {
+            requestAnimationFrame(animate);
+            return;
+        }
+
+        if (currentLeg >= journey.length - 1) {
+            setTimeout(() => {
+                currentLeg = 0;
+                progress = 0;
+                showPopup(journey[0].message, journey[0].coords);
+                requestAnimationFrame(animate);
+            }, 4000);
+            return;
+        }
+
+        const start = journey[currentLeg].coords;
+        const end = journey[currentLeg + 1].coords;
+
+        // Interpolate
+        const lat = start[0] + (end[0] - start[0]) * progress;
+        const lng = start[1] + (end[1] - start[1]) * progress;
+        planeMarker.setLatLng([lat, lng]);
+
+        // Rotation
+        const angle = Math.atan2(end[1] - start[1], end[0] - start[0]) * 180 / Math.PI;
+        const planeSprite = document.getElementById('plane-sprite');
+        if (planeSprite) {
+            planeSprite.style.transform = `rotate(${90 - angle}deg)`;
+        }
+
+        progress += speed;
+
+        if (progress >= 1) {
+            progress = 0;
+            currentLeg++;
+            
+            // Show popup at destination
+            const stop = journey[currentLeg];
+            if (stop.message) {
+                isPaused = true;
+                showPopup(stop.message, stop.coords);
+                setTimeout(() => {
+                    isPaused = false;
+                }, 2500); // Pause for reading
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    // Start after a brief delay
+    setTimeout(animate, 1000);
+
+    </script>
+
+</body>
+
+</html>
