@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animation Demo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #111;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 800px;
+            height: 450px;
+            /* 16:9 Aspect Ratio */
+            background: #000;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Shared Styles */
+        .text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            opacity: 0;
+            white-space: nowrap;
+        }
+
+        .highlight {
+            color: #ff3e00;
+        }
+
+        /* Scene 1: "Imagine" */
+        #text1 {
+            animation: scene1 3s ease-in-out forwards;
+        }
+
+        @keyframes scene1 {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(1.5);
+                filter: blur(10px);
+            }
+        }
+
+        /* Scene 2: "A World" */
+        #text2 {
+            animation: scene2 3s ease-in-out 2.5s forwards;
+        }
+
+        @keyframes scene2 {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -30%);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -70%);
+            }
+        }
+
+        /* Scene 3: "Without Limits" */
+        #text3 {
+            animation: scene3 3s ease-in-out 5s forwards;
+        }
+
+        @keyframes scene3 {
+            0% {
+                opacity: 0;
+                letter-spacing: 50px;
+            }
+
+            20% {
+                opacity: 1;
+                letter-spacing: 0px;
+            }
+
+            80% {
+                opacity: 1;
+                letter-spacing: 5px;
+            }
+
+            100% {
+                opacity: 0;
+                letter-spacing: 10px;
+                transform: translate(-50%, -50%) rotate(5deg);
+            }
+        }
+
+        /* Scene 4: "Antigravity" */
+        #text4 {
+            font-size: 6rem;
+            background: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: scene4 4s ease-in-out 7.5s forwards;
+        }
+
+        @keyframes scene4 {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0);
+            }
+
+            15% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+
+            30% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* Background Particles */
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 5s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-500px);
+                opacity: 0;
+            }
+        }
+
+        /* Progress Bar */
+        .progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: #ff3e00;
+            width: 0%;
+            animation: progress 11s linear forwards;
+        }
+
+        @keyframes progress {
+            to {
+                width: 100%;
+            }
+        }
+
+        .replay-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            opacity: 0;
+            animation: fadeInBtn 1s ease 11s forwards;
+        }
+
+        @keyframes fadeInBtn {
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Background Animation -->
+        <script>
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.top = '100%';
+                p.style.width = Math.random() * 5 + 'px';
+                p.style.height = p.style.width;
+                p.style.animationDelay = Math.random() * 5 + 's';
+                p.style.animationDuration = 3 + Math.random() * 5 + 's';
+                document.write(p.outerHTML);
+            }
+        </script>
+
+        <!-- Text Sequence -->
+        <div class="text" id="text1">Imagine</div>
+        <div class="text" id="text2">A World</div>
+        <div class="text" id="text3">Without <span class="highlight">Limits</span></div>
+        <div class="text" id="text4">ANTIGRAVITY</div>
+
+        <div class="progress"></div>
+        <button class="replay-btn" onclick="location.reload()">Replay</button>
+    </div>
+</body>
+
+</html>
