@@ -3,7 +3,7 @@
 A programmatic animation visualizing a life journey across India using [Leaflet.js](https://leafletjs.com/) and CSS animations.
 
 ## 🚀 Demo
-Open `map_animation.html` in your browser to see the animation in action.
+Open `map_animation.html` in your browser to see the animation in action or watch the video given below
 
 **DEMO VIDEO ON YOUTUBE**
 
