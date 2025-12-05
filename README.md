@@ -4,7 +4,8 @@ A programmatic animation visualizing a life journey across India using [Leaflet.
 
 
 DEMO:
-[![Watch the video](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=0pmXrimH1xw)
+
+[![Watch the video](https://img.youtube.com/vi/0pmXrimH1xw/maxresdefault.jpg)](https://www.youtube.com/watch?v=0pmXrimH1xw)
 
 
 
