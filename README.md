@@ -5,7 +5,7 @@ A programmatic animation visualizing a life journey across India using [Leaflet.
 ## 🚀 Demo
 Open `map_animation.html` in your browser to see the animation in action or watch the video given below
 
-**DEMO VIDEO ON YOUTUBE**
+**DEMO VIDEO: Click on below image**
 
 <a href="https://www.youtube.com/watch?v=0pmXrimH1xw">
   <img src="https://img.youtube.com/vi/0pmXrimH1xw/maxresdefault.jpg" width="600" alt="Watch the video">
